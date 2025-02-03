@@ -1,4 +1,4 @@
-import { GalleryVerticalEnd } from "lucide-react"
+import logo from "@/assets/img/image.png"
 
 import { LoginForm } from "@/components/login/login-form"
 
@@ -8,10 +8,12 @@ export default function Login() {
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
           <a href="#" className="flex items-center gap-2 font-medium">
-            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <GalleryVerticalEnd className="size-4" />
+            <div className="flex h-19 w-19 items-center justify-center ">
+              <img src={logo} className="size-16" alt="Logo" />
+              <h3 className="text-[17px] font-['Dancing_Script'] uppercase tracking-wide font-bold">
+                Administration
+              </h3> 
             </div>
-            Acme Inc.
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">
