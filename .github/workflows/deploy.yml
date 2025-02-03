@@ -1,0 +1,33 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches:
+      - main  # Replace with the branch you want to trigger the deployment on
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Step 3: Build the project
+      - name: Build project
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }} # Inject the API URL
+        run: npm run build
+
+      # Step 4: Deploy to Vercel
+      - name: Deploy to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          npm install -g vercel
+          vercel --prod --token=$VERCEL_TOKEN --yes
