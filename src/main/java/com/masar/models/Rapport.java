@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Entity
 @Data
-@Table(name = "rapports")
+@DiscriminatorValue("RAPPORT")
 public class Rapport {
     
     @Id

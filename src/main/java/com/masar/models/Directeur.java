@@ -2,7 +2,7 @@ package com.masar.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.DiscriminatorValue;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import java.util.List;
@@ -11,7 +11,7 @@ import jakarta.persistence.*;
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Table(name = "directeurs")
+@DiscriminatorValue("DIRECTEUR")
 public class Directeur extends Utilisateur {
     
     @Column(name = "id_bureau")

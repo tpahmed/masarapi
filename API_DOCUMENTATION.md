@@ -1,0 +1,241 @@
+# MASAR API Documentation
+
+## Overview
+MASAR API is a comprehensive educational management system that provides endpoints for managing students, teachers, academic directors, delegates, attendance, grades, resources, and reports. The API follows RESTful principles and uses JSON for data exchange.
+
+## Base URL
+```
+http://your-domain/api
+```
+
+## Authentication
+Authentication details should be provided here. (Currently not implemented in the codebase)
+
+## Common Response Codes
+- `200 OK`: Request successful
+- `201 Created`: Resource created successfully
+- `400 Bad Request`: Invalid request
+- `404 Not Found`: Resource not found
+- `500 Internal Server Error`: Server error
+
+## API Endpoints
+
+### 1. Users Management (`/api/utilisateurs`)
+#### Endpoints
+- `GET /utilisateurs`: Get all users
+- `GET /utilisateurs/{id}`: Get user by ID
+- `POST /utilisateurs`: Create new user
+- `PUT /utilisateurs/{id}`: Update user
+- `DELETE /utilisateurs/{id}`: Delete user
+
+### 2. Students Management (`/api/eleves`)
+#### Endpoints
+- `GET /eleves`: Get all students
+- `GET /eleves/{id}`: Get student by ID
+- `GET /eleves/id-eleve/{idEleve}`: Get student by student ID
+- `GET /eleves/niveau/{niveau}`: Get students by level
+- `GET /eleves/classe/{classe}`: Get students by class
+- `GET /eleves/annee-inscription/{date}`: Get students by registration year
+
+### 3. Teachers Management (`/api/enseignants`)
+#### Endpoints
+- `GET /enseignants`: Get all teachers
+- `GET /enseignants/{id}`: Get teacher by ID
+- `GET /enseignants/id-employe/{idEmploye}`: Get teacher by employee ID
+- `GET /enseignants/matiere/{matiere}`: Get teachers by subject
+- `GET /enseignants/qualification/{qualification}`: Get teachers by qualification
+- `GET /enseignants/experience?anneesMin={years}`: Get teachers by minimum experience
+- `POST /enseignants`: Create new teacher
+- `PUT /enseignants/{id}`: Update teacher
+- `DELETE /enseignants/{id}`: Delete teacher
+
+#### Teacher-specific Operations
+- `POST /enseignants/{enseignantId}/notes`: Create grade for teacher
+- `GET /enseignants/{enseignantId}/notes`: Get all grades by teacher
+- `POST /enseignants/{enseignantId}/ressources`: Create resource for teacher
+- `GET /enseignants/{enseignantId}/ressources`: Get all resources by teacher
+- `PUT /enseignants/{enseignantId}/ressources/{ressourceId}`: Update teacher's resource
+
+### 4. Academic Director Management (`/api/directeurs-academie`)
+#### Endpoints
+- `GET /directeurs-academie`: Get all academic directors
+- `GET /directeurs-academie/{id}`: Get academic director by ID
+- `GET /directeurs-academie/region/{region}`: Get academic directors by region
+- `GET /directeurs-academie/academie/{nomAcademie}`: Get academic director by academy name
+- `POST /directeurs-academie`: Create new academic director
+- `PUT /directeurs-academie/{id}`: Update academic director
+- `DELETE /directeurs-academie/{id}`: Delete academic director
+- `POST /directeurs-academie/{id}/rapports`: Generate reports
+- `POST /directeurs-academie/{id}/definir-politiques`: Define policies
+
+### 5. Delegate Management (`/api/delegues`)
+#### Endpoints
+- `GET /delegues`: Get all delegates
+- `GET /delegues/{id}`: Get delegate by ID
+- `GET /delegues/region/{region}`: Get delegates by region
+- `POST /delegues`: Create new delegate
+- `PUT /delegues/{id}`: Update delegate
+- `DELETE /delegues/{id}`: Delete delegate
+
+### 6. Attendance Management (`/api/presences`)
+#### Endpoints
+- `GET /presences`: Get all attendance records
+- `GET /presences/{id}`: Get attendance by ID
+- `GET /presences/id-presence/{idPresence}`: Get attendance by presence ID
+- `GET /presences/date/{date}`: Get attendance by date
+- `GET /presences/statut/{statut}`: Get attendance by status
+- `GET /presences/eleve/{idEleve}`: Get attendance by student
+- `GET /presences/enseignant/{idEnseignant}`: Get attendance by teacher
+- `GET /presences/periode?dateDebut={start}&dateFin={end}`: Get attendance by period
+- `POST /presences`: Add new attendance record
+- `PUT /presences/{id}`: Update attendance record
+
+### 7. Grades Management (`/api/notes`)
+#### Endpoints
+- `GET /notes`: Get all grades
+- `GET /notes/{id}`: Get grade by ID
+- `GET /notes/id-note/{idNote}`: Get grade by note ID
+- `GET /notes/matiere/{matiere}`: Get grades by subject
+- `GET /notes/date/{date}`: Get grades by date
+- `GET /notes/eleve/{idEleve}`: Get grades by student
+- `GET /notes/enseignant/{idEnseignant}`: Get grades by teacher
+- `GET /notes/matiere/{matiere}/eleve/{idEleve}`: Get grades by subject and student
+- `POST /notes`: Add new grade
+- `PUT /notes/{id}`: Update grade
+- `DELETE /notes/{id}`: Delete grade
+
+### 8. Resources Management (`/api/ressources`)
+#### Endpoints
+- `GET /ressources`: Get all resources
+- `GET /ressources/{id}`: Get resource by ID
+- `GET /ressources/id-ressource/{idRessource}`: Get resource by resource ID
+- `GET /ressources/titre/{titre}`: Get resources by title
+- `GET /ressources/type-fichier/{typeFichier}`: Get resources by file type
+- `GET /ressources/enseignant/{enseignantId}`: Get resources by teacher
+- `GET /ressources/recentes?date={date}`: Get recent resources
+- `GET /ressources/periode?dateDebut={start}&dateFin={end}`: Get resources by period
+- `POST /ressources`: Add new resource
+- `PUT /ressources/{id}`: Update resource
+- `DELETE /ressources/{id}`: Delete resource
+
+### 9. Reports Management (`/api/rapports`)
+#### Endpoints
+- `GET /rapports`: Get all reports
+- `GET /rapports/{id}`: Get report by ID
+- `GET /rapports/id-rapport/{idRapport}`: Get report by report ID
+- `GET /rapports/genere-par/{generePar}`: Get reports by generator
+- `GET /rapports/date/{date}`: Get reports by date
+- `GET /rapports/type/{typeRapport}`: Get reports by type
+
+## Data Models
+
+### User (Utilisateur)
+```json
+{
+    "id": "UUID",
+    "nom": "string",
+    "prenom": "string",
+    "email": "string",
+    "role": "string"
+}
+```
+
+### Student (Eleve)
+```json
+{
+    "id": "UUID",
+    "idEleve": "string",
+    "nom": "string",
+    "prenom": "string",
+    "niveau": "string",
+    "classe": "string",
+    "dateInscription": "date"
+}
+```
+
+### Teacher (Enseignant)
+```json
+{
+    "id": "UUID",
+    "idEmploye": "string",
+    "nom": "string",
+    "prenom": "string",
+    "matiere": "string",
+    "qualification": "string",
+    "anneesExperience": "integer"
+}
+```
+
+### Academic Director (DirecteurAcademie)
+```json
+{
+    "id": "UUID",
+    "nom": "string",
+    "prenom": "string",
+    "region": "string",
+    "nomAcademie": "string"
+}
+```
+
+### Attendance (Presence)
+```json
+{
+    "id": "UUID",
+    "idPresence": "string",
+    "date": "date",
+    "statut": "string",
+    "eleveId": "UUID",
+    "enseignantId": "UUID"
+}
+```
+
+### Grade (Note)
+```json
+{
+    "id": "UUID",
+    "idNote": "string",
+    "matiere": "string",
+    "valeur": "float",
+    "date": "date",
+    "eleveId": "UUID",
+    "enseignantId": "UUID"
+}
+```
+
+### Resource (Ressource)
+```json
+{
+    "id": "UUID",
+    "idRessource": "string",
+    "titre": "string",
+    "typeFichier": "string",
+    "dateTelecharge": "date",
+    "telechargePar": "string",
+    "enseignantId": "UUID"
+}
+```
+
+### Report (Rapport)
+```json
+{
+    "id": "UUID",
+    "idRapport": "string",
+    "typeRapport": "string",
+    "contenu": "string",
+    "date": "date",
+    "generePar": "string"
+}
+```
+
+## Date Formats
+- All dates should be in ISO 8601 format: `YYYY-MM-DD`
+- Datetime fields should be in ISO 8601 format with timezone: `YYYY-MM-DDThh:mm:ss.sssZ`
+
+## Rate Limiting
+Information about rate limiting should be added here.
+
+## Versioning
+Information about API versioning should be added here.
+
+## Support
+For support and questions, please contact the development team. 

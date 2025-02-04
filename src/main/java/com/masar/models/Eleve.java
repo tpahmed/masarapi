@@ -8,7 +8,7 @@ import java.time.LocalDate;
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Table(name = "eleves")
+@DiscriminatorValue("ELEVE")
 public class Eleve extends Utilisateur {
     
     @Column(name = "id_eleve", nullable = false, unique = true)

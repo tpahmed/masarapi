@@ -69,7 +69,7 @@ public class DirecteurService {
                 directeur.get().getNom(),
                 "AJOUT_UTILISATEUR",
                 "Ajout d'un nouvel utilisateur: " + utilisateur.getNom(),
-                directeur.get().getId().toString()
+                directeur.get().getId()
             );
             return savedUtilisateur;
         }
@@ -85,7 +85,7 @@ public class DirecteurService {
                 directeur.get().getNom(),
                 "APPROBATION_RESSOURCES",
                 "Approbation des ressources par le directeur",
-                directeur.get().getId().toString()
+                directeur.get().getId()
             );
         } else {
             throw new RuntimeException("Directeur not found with id: " + directeurId);
@@ -95,7 +95,7 @@ public class DirecteurService {
     public List<Rapport> getRapportsByDirecteur(UUID directeurId) {
         Optional<Directeur> directeur = directeurRepository.findById(directeurId);
         if (directeur.isPresent()) {
-            return rapportRepository.findByUtilisateurId(directeurId.toString());
+            return rapportRepository.findByUtilisateurId(directeurId);
         }
         throw new RuntimeException("Directeur not found with id: " + directeurId);
     }

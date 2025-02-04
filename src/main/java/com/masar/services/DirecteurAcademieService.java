@@ -70,7 +70,7 @@ public class DirecteurAcademieService {
                 directeur.get().getNom(),
                 typeRapport,
                 contenu,
-                directeur.get().getId().toString()
+                directeur.get().getId()
             );
         }
         throw new RuntimeException("DirecteurAcademie not found with id: " + directeurId);
@@ -84,7 +84,7 @@ public class DirecteurAcademieService {
                 directeur.get().getNom(),
                 "POLITIQUE_ACADEMIQUE",
                 politiques,
-                directeur.get().getId().toString()
+                directeur.get().getId()
             );
         }
         throw new RuntimeException("DirecteurAcademie not found with id: " + directeurId);
@@ -93,7 +93,7 @@ public class DirecteurAcademieService {
     public List<Rapport> getRapportsByDirecteurAcademie(UUID directeurId) {
         Optional<DirecteurAcademie> directeur = directeurAcademieRepository.findById(directeurId);
         if (directeur.isPresent()) {
-            return rapportRepository.findByUtilisateurId(directeurId.toString());
+            return rapportRepository.findByUtilisateurId(directeurId);
         }
         throw new RuntimeException("DirecteurAcademie not found with id: " + directeurId);
     }
@@ -112,7 +112,7 @@ public class DirecteurAcademieService {
     public List<Rapport> getRapportsByAcademie(String nomAcademie) {
         Optional<DirecteurAcademie> directeur = directeurAcademieRepository.findByNomAcademie(nomAcademie);
         if (directeur.isPresent()) {
-            return rapportRepository.findByUtilisateurId(directeur.get().getId().toString());
+            return rapportRepository.findByUtilisateurId(directeur.get().getId());
         }
         throw new RuntimeException("DirecteurAcademie not found for academie: " + nomAcademie);
     }
@@ -120,7 +120,7 @@ public class DirecteurAcademieService {
     public List<Rapport> getRapportsByRegion(String region) {
         List<DirecteurAcademie> directeurs = directeurAcademieRepository.findByRegion(region);
         return directeurs.stream()
-            .flatMap(directeur -> rapportRepository.findByUtilisateurId(directeur.getId().toString()).stream())
+            .flatMap(directeur -> rapportRepository.findByUtilisateurId(directeur.getId()).stream())
             .collect(Collectors.toList());
     }
 } 

@@ -7,6 +7,7 @@ import java.util.UUID;
 @Entity
 @Data
 @Table(name = "utilisateurs")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Utilisateur {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

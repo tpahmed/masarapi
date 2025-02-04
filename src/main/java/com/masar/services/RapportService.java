@@ -3,6 +3,7 @@ package com.masar.services;
 import com.masar.models.Rapport;
 import com.masar.models.Utilisateur;
 import com.masar.repositories.RapportRepository;
+import com.masar.repositories.UtilisateurRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,9 @@ public class RapportService {
     
     @Autowired
     private RapportRepository rapportRepository;
+
+    @Autowired
+    private UtilisateurRepository utilisateurRepository;
 
     public List<Rapport> getAllRapports() {
         return rapportRepository.findAll();
@@ -42,7 +46,7 @@ public class RapportService {
         return rapportRepository.findByTypeRapport(typeRapport);
     }
 
-    public List<Rapport> getRapportsByUtilisateur(String utilisateurId) {
+    public List<Rapport> getRapportsByUtilisateur(UUID utilisateurId) {
         return rapportRepository.findByUtilisateurId(utilisateurId);
     }
 
@@ -75,7 +79,7 @@ public class RapportService {
     }
 
     @Transactional
-    public Rapport genererRapport(String generePar, String typeRapport, String contenu, String utilisateurId) {
+    public Rapport genererRapport(String generePar, String typeRapport, String contenu, UUID utilisateurId) {
         Rapport rapport = new Rapport();
         rapport.setGenerePar(generePar);
         rapport.setTypeRapport(typeRapport);
@@ -85,8 +89,12 @@ public class RapportService {
 
         // Set utilisateur if provided
         if (utilisateurId != null) {
-            // You might want to validate the utilisateur exists here
-            rapport.setUtilisateur(new Utilisateur()); // This should be fetched from repository
+            Optional<Utilisateur> utilisateur = utilisateurRepository.findById(utilisateurId);
+            if (utilisateur.isPresent()) {
+                rapport.setUtilisateur(utilisateur.get());
+            } else {
+                throw new RuntimeException("Utilisateur not found with id: " + utilisateurId);
+            }
         }
 
         return createRapport(rapport);

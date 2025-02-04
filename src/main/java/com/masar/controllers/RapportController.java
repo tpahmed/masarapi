@@ -54,7 +54,7 @@ public class RapportController {
     }
 
     @GetMapping("/utilisateur/{utilisateurId}")
-    public List<Rapport> getRapportsByUtilisateur(@PathVariable String utilisateurId) {
+    public List<Rapport> getRapportsByUtilisateur(@PathVariable UUID utilisateurId) {
         return rapportService.getRapportsByUtilisateur(utilisateurId);
     }
 
@@ -89,7 +89,7 @@ public class RapportController {
             @RequestParam String generePar,
             @RequestParam String typeRapport,
             @RequestParam String contenu,
-            @RequestParam(required = false) String utilisateurId) {
+            @RequestParam(required = false) UUID utilisateurId) {
         try {
             Rapport rapport = rapportService.genererRapport(generePar, typeRapport, contenu, utilisateurId);
             return ResponseEntity.ok(rapport);

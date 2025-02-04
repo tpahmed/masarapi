@@ -66,7 +66,7 @@ public class DelegueService {
                 delegue.get().getNom(),
                 typeRapport,
                 contenu,
-                delegue.get().getId().toString()
+                delegue.get().getId()
             );
         }
         throw new RuntimeException("Delegue not found with id: " + delegueId);
@@ -75,7 +75,7 @@ public class DelegueService {
     public List<Rapport> getRapportsByDelegue(UUID delegueId) {
         Optional<Delegue> delegue = delegueRepository.findById(delegueId);
         if (delegue.isPresent()) {
-            return rapportRepository.findByUtilisateurId(delegueId.toString());
+            return rapportRepository.findByUtilisateurId(delegueId);
         }
         throw new RuntimeException("Delegue not found with id: " + delegueId);
     }
@@ -94,7 +94,7 @@ public class DelegueService {
     public List<Rapport> getRapportsByRegion(String region) {
         List<Delegue> delegues = delegueRepository.findByRegion(region);
         return delegues.stream()
-            .flatMap(delegue -> rapportRepository.findByUtilisateurId(delegue.getId().toString()).stream())
+            .flatMap(delegue -> rapportRepository.findByUtilisateurId(delegue.getId()).stream())
             .collect(Collectors.toList());
     }
 } 

@@ -7,7 +7,7 @@ import lombok.EqualsAndHashCode;
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Table(name = "enseignants")
+@DiscriminatorValue("ENSEIGNANT")
 public class Enseignant extends Utilisateur {
     
     @Column(nullable = false)
