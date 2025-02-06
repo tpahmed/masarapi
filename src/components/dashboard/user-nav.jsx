@@ -27,12 +27,6 @@ export function UserNav() {
           case 'p':
             navigate('/profile')
             break
-          case 'b':
-            navigate('/billing')
-            break
-          case 's':
-            navigate('/settings')
-            break
           case 'z':
             handleLogout()
             break
@@ -84,16 +78,6 @@ export function UserNav() {
             <User className="mr-2 h-4 w-4" />
             <span>Profile</span>
             <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate('/billing')}>
-            <CreditCard className="mr-2 h-4 w-4" />
-            <span>Billing</span>
-            <DropdownMenuShortcut>⇧⌘B</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate('/settings')}>
-            <Settings className="mr-2 h-4 w-4" />
-            <span>Settings</span>
-            <DropdownMenuShortcut>⇧⌘S</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
