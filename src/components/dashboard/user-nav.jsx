@@ -2,7 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react'
 import axios from 'axios'
-import {  CreditCard, LogOut, Settings, User } from 'lucide-react'
+import {   LogOut, User } from 'lucide-react'
 
 import {
   DropdownMenu,

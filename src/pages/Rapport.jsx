@@ -1,6 +1,5 @@
 "use client"
-import {  ClipboardPlus } from 'lucide-react'
-import { Button } from "@/components/ui/button"
+
 import { columns } from "@/components/rapport/columns"
 import { DataTable } from "@/components/rapport/data-table"
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
