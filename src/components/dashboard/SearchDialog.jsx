@@ -3,8 +3,10 @@ import * as React from "react"
 import { Search, ArrowRightToLine } from "lucide-react"
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import { useNavigate } from "react-router-dom"
 
 export function SearchCommand() {
+  const navigate = useNavigate()
   const [open, setOpen] = React.useState(false)
   const [searchQuery, setSearchQuery] = React.useState("")
 
@@ -52,8 +54,7 @@ export function SearchCommand() {
                     onClick={() => {
                       setOpen(false)
                       setSearchQuery("")
-                      // Add navigation logic here
-                      console.log(`Navigating to ${item.name}`)
+                      navigate(`/${item.name.toLowerCase()}`)
                     }}
                   >
                      <ArrowRightToLine className="h-4 w-4 mr-2 text-gray-400" />
@@ -78,13 +79,7 @@ const items = [
     name: "Dashboard",
   },
   {
-    name: "Tasks",
-  },
-  {
-    name: "Apps",
-  },
-  {
-    name: "Chats",
+    name: "Rapport",
   },
   {
     name: "Users",
