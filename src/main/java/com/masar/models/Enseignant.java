@@ -3,11 +3,15 @@ package com.masar.models;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
-@Entity
+@Entity 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @DiscriminatorValue("ENSEIGNANT")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Enseignant extends Utilisateur {
     
     @Column(nullable = false)

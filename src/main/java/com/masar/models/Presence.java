@@ -4,10 +4,14 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.util.Date;
 import java.util.UUID;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Entity
 @Data
 @DiscriminatorValue("PRESENCE")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Presence {
     
     @Id

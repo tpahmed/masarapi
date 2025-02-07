@@ -1,11 +1,15 @@
 package com.masar.models;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import jakarta.persistence.*;
 import java.util.UUID;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "utilisateurs")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Utilisateur {

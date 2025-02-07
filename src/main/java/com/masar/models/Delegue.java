@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.DiscriminatorValue;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.CascadeType;
@@ -11,6 +13,8 @@ import java.util.List;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @DiscriminatorValue("DELEGUE")
 public class Delegue extends Utilisateur {

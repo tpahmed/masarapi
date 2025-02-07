@@ -3,11 +3,15 @@ package com.masar.models;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
 @DiscriminatorValue("PARENT")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Parent extends Utilisateur {
     
     @Column(name = "id_parent", nullable = false, unique = true)

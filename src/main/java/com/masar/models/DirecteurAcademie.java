@@ -5,11 +5,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.DiscriminatorValue;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import java.util.List;
 import jakarta.persistence.*;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @DiscriminatorValue("DIRECTEUR_ACADEMIE")
 public class DirecteurAcademie extends Utilisateur {

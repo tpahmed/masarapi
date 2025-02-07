@@ -3,12 +3,16 @@ package com.masar.models;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 import java.time.LocalDate;
 
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = true)
 @DiscriminatorValue("ELEVE")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Eleve extends Utilisateur {
     
     @Column(name = "id_eleve", nullable = false, unique = true)
