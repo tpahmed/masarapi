@@ -9,12 +9,77 @@ http://your-domain/api
 ```
 
 ## Authentication
-Authentication details should be provided here. (Currently not implemented in the codebase)
+The API uses JWT (JSON Web Token) authentication. To access protected endpoints, you need to:
+1. Register using the signup endpoint
+2. Login to get a JWT token
+3. Include the token in the Authorization header of subsequent requests
+
+### Authentication Endpoints
+
+#### 1. Signup
+```http
+POST /api/auth/signup
+```
+
+Request body:
+```json
+{
+    "nom": "string",
+    "email": "string",
+    "password": "string (min 6 characters)",
+    "role": "string",
+    "numeroDeTelephone": "string (optional)",
+    "adresse": "string (optional)"
+}
+```
+
+Response:
+```json
+{
+    "token": "string (JWT token)",
+    "type": "Bearer",
+    "email": "string",
+    "role": "string",
+    "nom": "string"
+}
+```
+
+#### 2. Login
+```http
+POST /api/auth/login
+```
+
+Request body:
+```json
+{
+    "email": "string",
+    "password": "string"
+}
+```
+
+Response:
+```json
+{
+    "token": "string (JWT token)",
+    "type": "Bearer",
+    "email": "string",
+    "role": "string",
+    "nom": "string"
+}
+```
+
+### Using Authentication
+For protected endpoints, include the JWT token in the Authorization header:
+```http
+Authorization: Bearer <your-jwt-token>
+```
 
 ## Common Response Codes
 - `200 OK`: Request successful
 - `201 Created`: Resource created successfully
 - `400 Bad Request`: Invalid request
+- `401 Unauthorized`: Authentication failed or token missing/invalid
+- `403 Forbidden`: Insufficient permissions
 - `404 Not Found`: Resource not found
 - `500 Internal Server Error`: Server error
 
@@ -134,9 +199,11 @@ Authentication details should be provided here. (Currently not implemented in th
 {
     "id": "UUID",
     "nom": "string",
-    "prenom": "string",
     "email": "string",
-    "role": "string"
+    "motDePasse": "string",
+    "role": "string",
+    "numeroDeTelephone": "string (optional)",
+    "adresse": "string (optional)"
 }
 ```
 
@@ -227,15 +294,17 @@ Authentication details should be provided here. (Currently not implemented in th
 }
 ```
 
-## Date Formats
-- All dates should be in ISO 8601 format: `YYYY-MM-DD`
-- Datetime fields should be in ISO 8601 format with timezone: `YYYY-MM-DDThh:mm:ss.sssZ`
+## Security
+- All passwords are hashed using BCrypt before storage
+- JWT tokens expire after 24 hours
+- Cross-Origin Resource Sharing (CORS) is enabled for all origins
+- All endpoints except authentication endpoints require valid JWT token
 
 ## Rate Limiting
-Information about rate limiting should be added here.
+Currently not implemented. Will be added in future versions.
 
 ## Versioning
-Information about API versioning should be added here.
+API version is currently v1. All endpoints are prefixed with `/api`.
 
 ## Support
 For support and questions, please contact the development team. 
