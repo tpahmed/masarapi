@@ -96,11 +96,109 @@ Authorization: Bearer <your-jwt-token>
 ### 2. Students Management (`/api/eleves`)
 #### Endpoints
 - `GET /eleves`: Get all students
-- `GET /eleves/{id}`: Get student by ID
+- `GET /eleves/{id}`: Get student by ID (UUID)
 - `GET /eleves/id-eleve/{idEleve}`: Get student by student ID
 - `GET /eleves/niveau/{niveau}`: Get students by level
 - `GET /eleves/classe/{classe}`: Get students by class
-- `GET /eleves/annee-inscription/{date}`: Get students by registration year
+- `GET /eleves/annee-inscription/{date}`: Get students by registration year (ISO date format)
+- `GET /eleves/classe-niveau?classe={classe}&niveau={niveau}`: Get students by class and level
+- `POST /eleves`: Create new student
+- `PUT /eleves/{id}`: Update student
+- `DELETE /eleves/{id}`: Delete student
+
+#### Student-specific Operations
+##### Grades
+- `GET /eleves/{id}/notes`: Get all grades for a student
+- `GET /eleves/{id}/notes/matiere/{matiere}`: Get student's grades by subject
+
+##### Attendance
+- `GET /eleves/{id}/presence`: Get all attendance records for a student
+- `GET /eleves/{id}/presence/periode?dateDebut={start}&dateFin={end}`: Get student's attendance records by period
+
+##### Resources
+- `GET /eleves/{id}/ressources`: Get all resources available to a student
+- `GET /eleves/{id}/ressources/matiere/{matiere}`: Get student's resources by subject
+- `GET /eleves/{id}/ressources/recentes?depuis={date}`: Get student's recent resources since date
+
+#### Request/Response Examples
+
+##### Create Student
+```http
+POST /api/eleves
+```
+Request body:
+```json
+{
+    "idEleve": "string",
+    "nom": "string",
+    "prenom": "string",
+    "niveau": "string",
+    "classe": "string",
+    "dateInscription": "date"
+}
+```
+
+##### Update Student
+```http
+PUT /api/eleves/{id}
+```
+Request body: Same as create student
+
+##### Get Student's Grades
+```http
+GET /api/eleves/{id}/notes
+```
+Response:
+```json
+[
+    {
+        "id": "UUID",
+        "idNote": "string",
+        "matiere": "string",
+        "valeur": "float",
+        "date": "date",
+        "eleveId": "UUID",
+        "enseignantId": "UUID"
+    }
+]
+```
+
+##### Get Student's Attendance
+```http
+GET /api/eleves/{id}/presence
+```
+Response:
+```json
+[
+    {
+        "id": "UUID",
+        "idPresence": "string",
+        "date": "date",
+        "statut": "string",
+        "eleveId": "UUID",
+        "enseignantId": "UUID"
+    }
+]
+```
+
+##### Get Student's Resources
+```http
+GET /api/eleves/{id}/ressources
+```
+Response:
+```json
+[
+    {
+        "id": "UUID",
+        "idRessource": "string",
+        "titre": "string",
+        "typeFichier": "string",
+        "dateTelecharge": "date",
+        "telechargePar": "string",
+        "enseignantId": "UUID"
+    }
+]
+```
 
 ### 3. Teachers Management (`/api/enseignants`)
 #### Endpoints
