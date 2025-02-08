@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { Eye, EyeOff } from "lucide-react"
+import axios from "axios"
 
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
@@ -21,15 +22,16 @@ const studentFormSchema = z.object({
     message: "Please enter a valid year",
   }),
   class: z.string().min(2, "Class must be at least 2 characters"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
 })
 
-export function AddStudentDialog(props) {
-  const { open, onOpenChange } = props
+export function AddStudentDialog({ open, onOpenChange, onSuccess }) {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isPasswordFilled, setIsPasswordFilled] = useState(false)
@@ -53,9 +55,39 @@ export function AddStudentDialog(props) {
     setIsPasswordFilled(password.length >= 1)
   }, [form])
 
-  function onSubmit(values) {
-    console.log(values)
-    onOpenChange(false)
+  async function onSubmit(values) {
+    try {
+      setLoading(true)
+      setError("")
+
+      // First create the user account
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/signup`, {
+        nom: values.name,
+        email: values.email,
+        password: values.password,
+        role: "STUDENT" // Set role as STUDENT
+      })
+
+      // Then create the student profile
+      const [prenom, nom] = values.name.split(" ")
+      const studentData = {
+        nom: nom || "",
+        prenom: prenom || "",
+        niveau: values.level,
+        classe: values.class,
+        dateInscription: `${values.yearOfInscription}-09-01`
+      }
+
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/eleves`, studentData)
+
+      onOpenChange(false)
+      if (onSuccess) onSuccess()
+    } catch (error) {
+      console.error("Error adding student:", error)
+      setError(error.response?.data?.message || "Failed to add student. Please try again.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -66,6 +98,7 @@ export function AddStudentDialog(props) {
           <DialogDescription className="text-gray-400 text-sm">
             Add a new student to the system. Click save when you&apos;re done.
           </DialogDescription>
+          {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="px-6 pb-6">
@@ -237,8 +270,9 @@ export function AddStudentDialog(props) {
               <Button
                 type="submit"
                 className="h-9 px-4 text-sm dark:bg-white dark:text-black hover:bg-gray-800 bg-black text-white dark:hover:bg-gray-200"
+                disabled={loading}
               >
-                Save changes
+                {loading ? "Saving..." : "Save changes"}
               </Button>
             </div>
           </form>

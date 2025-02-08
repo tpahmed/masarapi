@@ -1,7 +1,8 @@
 import { AppSidebar } from "@/components/sidebar/app-sidebar"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import Header from "@/layout/header"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import axios from "axios"
 import { Button } from "@/components/ui/button"
 import { AddStudentDialog } from "@/components/user/add-student-dialog"
 import { AddTeacherDialog } from "@/components/user/add-teacher-dialog"
@@ -13,8 +14,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 
 
 export default function UserManagement() {
-    const [tableType, setTableType] = useState("students")
-    const [isStudentDialogOpen, setIsStudentDialogOpen] = useState(false)
+  const [tableType, setTableType] = useState("students")
+  const [isStudentDialogOpen, setIsStudentDialogOpen] = useState(false)
   const [isTeacherDialogOpen, setIsTeacherDialogOpen] = useState(false)
   const [isEditStudentDialogOpen, setIsEditStudentDialogOpen] = useState(false)
   const [isEditTeacherDialogOpen, setIsEditTeacherDialogOpen] = useState(false)
@@ -22,72 +23,119 @@ export default function UserManagement() {
   const [editingStudent, setEditingStudent] = useState(null)
   const [editingTeacher, setEditingTeacher] = useState(null)
   const [selectedIds, setSelectedIds] = useState([])
-  const [students, setStudents] = useState([
-    {
-      id: "1",
-      name: "John Smith",
-      email: "john.smith@school.com",
-      level: "Advanced",
-      age: 15,
-      yearOfInscription: 2023,
-      class: "10A",
-    },
-    {
-      id: "2",
-      name: "Emma Wilson",
-      email: "emma.w@school.com",
-      level: "Intermediate",
-      age: 14,
-      yearOfInscription: 2022,
-      class: "9B",
-    },
-    {
-      id: "3",
-      name: "Michael Johnson",
-      email: "michael.j@school.com",
-      level: "Beginner",
-      age: 13,
-      yearOfInscription: 2023,
-      class: "8C",
-    },
-    {
-      id: "4",
-      name: "Sophia Lee",
-      email: "sophia.l@school.com",
-      level: "Advanced",
-      age: 16,
-      yearOfInscription: 2021,
-      class: "11A",
-    },
-    {
-      id: "5",
-      name: "Daniel Brown",
-      email: "daniel.b@school.com",
-      level: "Intermediate",
-      age: 15,
-      yearOfInscription: 2022,
-      class: "10B",
-    },
-  ])
+  const [students, setStudents] = useState([])
+  const [teachers, setTeachers] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  const [teachers, setTeachers] = useState([
-    {
-      id: "1",
-      name: "Dr. Sarah Johnson",
-      email: "sarah.j@school.com",
-      subject: "Mathematics",
-      experienceYears: 8,
-      qualification: "Ph.D. Mathematics",
-    },
-    {
-      id: "2",
-      name: "Prof. Michael Brown",
-      email: "m.brown@school.com",
-      subject: "Physics",
-      experienceYears: 12,
-      qualification: "M.Sc. Physics",
-    },
-  ])
+  useEffect(() => {
+    fetchData()
+  }, [tableType])
+
+  const fetchData = async () => {
+    try {
+      setLoading(true)
+      if (tableType === "students") {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/eleves`)
+        const formattedStudents = response.data.map(student => ({
+          id: student.id,
+          name: `${student.prenom} ${student.nom}`,
+          email: `${student.prenom.toLowerCase()}.${student.nom.toLowerCase()}@school.com`,
+          level: student.niveau,
+          yearOfInscription: new Date(student.dateInscription).getFullYear(),
+          class: student.classe,
+          idEleve: student.idEleve
+        }))
+        setStudents(formattedStudents)
+      } else {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/enseignants`)
+        const formattedTeachers = response.data.map(teacher => ({
+          id: teacher.id,
+          name: `${teacher.prenom} ${teacher.nom}`,
+          email: `${teacher.prenom.toLowerCase()}.${teacher.nom.toLowerCase()}@school.com`,
+          subject: teacher.matiere,
+          experienceYears: teacher.anneesExperience,
+          qualification: teacher.qualification,
+          idEmploye: teacher.idEmploye
+        }))
+        setTeachers(formattedTeachers)
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleDelete = async (ids) => {
+    setSelectedIds(ids)
+    setIsDeleteDialogOpen(true)
+  }
+
+  const confirmDelete = async () => {
+    try {
+      const endpoint = tableType === "students" ? "eleves" : "enseignants"
+      await Promise.all(
+        selectedIds.map(id => 
+          axios.delete(`${import.meta.env.VITE_API_URL}/api/${endpoint}/${id}`)
+        )
+      )
+      await fetchData()
+      setIsDeleteDialogOpen(false)
+      setSelectedIds([])
+    } catch (error) {
+      console.error("Error deleting:", error)
+    }
+  }
+
+  const handleEdit = (id) => {
+    if (tableType === "students") {
+      const studentToEdit = students.find((student) => student.id === id)
+      setEditingStudent(studentToEdit)
+      setIsEditStudentDialogOpen(true)
+    } else {
+      const teacherToEdit = teachers.find((teacher) => teacher.id === id)
+      setEditingTeacher(teacherToEdit)
+      setIsEditTeacherDialogOpen(true)
+    }
+  }
+
+  const handleSaveStudent = async (updatedStudent) => {
+    try {
+      await axios.put(
+        `${import.meta.env.VITE_API_URL}/api/eleves/${updatedStudent.id}`,
+        {
+          idEleve: updatedStudent.idEleve,
+          nom: updatedStudent.name.split(" ")[1],
+          prenom: updatedStudent.name.split(" ")[0],
+          niveau: updatedStudent.level,
+          classe: updatedStudent.class,
+          dateInscription: `${updatedStudent.yearOfInscription}-01-01`
+        }
+      )
+      await fetchData()
+    } catch (error) {
+      console.error("Error updating student:", error)
+    }
+  }
+
+  const handleSaveTeacher = async (updatedTeacher) => {
+    try {
+      await axios.put(
+        `${import.meta.env.VITE_API_URL}/api/enseignants/${updatedTeacher.id}`,
+        {
+          idEmploye: updatedTeacher.idEmploye,
+          nom: updatedTeacher.name.split(" ")[1],
+          prenom: updatedTeacher.name.split(" ")[0],
+          matiere: updatedTeacher.subject,
+          qualification: updatedTeacher.qualification,
+          anneesExperience: updatedTeacher.experienceYears
+        }
+      )
+      await fetchData()
+    } catch (error) {
+      console.error("Error updating teacher:", error)
+    }
+  }
 
   const studentColumns = [
     {
@@ -177,44 +225,7 @@ export default function UserManagement() {
     },
   ]
 
-  const handleDelete = (ids) => {
-    setSelectedIds(ids)
-    setIsDeleteDialogOpen(true)
-  }
 
-  const confirmDelete = () => {
-    if (tableType === "students") {
-      setStudents(students.filter((student) => !selectedIds.includes(student.id)))
-    } else {
-      setTeachers(teachers.filter((teacher) => !selectedIds.includes(teacher.id)))
-    }
-    setIsDeleteDialogOpen(false)
-    setSelectedIds([])
-  }
-
-  const handleEdit = (id) => {
-    if (tableType === "students") {
-      const studentToEdit = students.find((student) => student.id === id)
-      setEditingStudent(studentToEdit)
-      setIsEditStudentDialogOpen(true)
-    } else {
-      const teacherToEdit = teachers.find((teacher) => teacher.id === id)
-      setEditingTeacher(teacherToEdit)
-      setIsEditTeacherDialogOpen(true)
-    }
-  }
-
-  const handleSaveStudent = (updatedStudent) => {
-    setStudents(
-      students.map((student) => (student.id === updatedStudent.id ? { ...student, ...updatedStudent } : student)),
-    )
-  }
-
-  const handleSaveTeacher = (updatedTeacher) => {
-    setTeachers(
-      teachers.map((teacher) => (teacher.id === updatedTeacher.id ? { ...teacher, ...updatedTeacher } : teacher)),
-    )
-  }
 
   return (
     <SidebarProvider>

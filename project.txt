@@ -1,0 +1,13 @@
+equipe: 
+    - Haloubi Reda
+    - Ben Slam mehdi
+    - Boulaouane Ahmed
+    - El Kharraz Adnane
+    - Charaaoui Mohammed
+
+## Github
+[] Backend ## Spring Boot (main branch)
+[] Frontend ## reactJs (frontend branch) 
+
+## Docker (with database)
+[] ahmedboulaouane/masar-api

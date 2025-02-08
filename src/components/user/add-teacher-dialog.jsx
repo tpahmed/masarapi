@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { Eye, EyeOff } from "lucide-react"
+import axios from "axios"
 
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
@@ -19,15 +20,16 @@ const teacherFormSchema = z.object({
     message: "Experience years must be a positive number",
   }),
   qualification: z.string().min(2, "Qualification must be at least 2 characters"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
 })
 
-export function AddTeacherDialog(props) {
-  const { open, onOpenChange } = props
+export function AddTeacherDialog({ open, onOpenChange, onSuccess }) {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isPasswordFilled, setIsPasswordFilled] = useState(false)
@@ -50,9 +52,39 @@ export function AddTeacherDialog(props) {
     setIsPasswordFilled(password.length >= 1)
   }, [form])
 
-  function onSubmit(values) {
-    console.log(values)
-    onOpenChange(false)
+  async function onSubmit(values) {
+    try {
+      setLoading(true)
+      setError("")
+
+      // First create the user account
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/signup`, {
+        nom: values.name,
+        email: values.email,
+        password: values.password,
+        role: "TEACHER"
+      })
+
+      // Split the full name into first and last name
+      const [prenom, nom] = values.name.split(" ")
+
+      // Then create the teacher profile
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/enseignants`, {
+        nom: nom || "",
+        prenom: prenom || "",
+        matiere: values.subject,
+        qualification: values.qualification,
+        anneesExperience: parseInt(values.experienceYears)
+      })
+
+      onOpenChange(false)
+      if (onSuccess) onSuccess()
+    } catch (error) {
+      console.error("Error adding teacher:", error)
+      setError(error.response?.data?.message || "Failed to add teacher. Please try again.")
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -63,6 +95,7 @@ export function AddTeacherDialog(props) {
           <DialogDescription className="text-gray-400 text-sm">
             Add a new teacher to the system. Click save when you&apos;re done.
           </DialogDescription>
+          {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="px-6 pb-6">
@@ -195,7 +228,6 @@ export function AddTeacherDialog(props) {
                         />
                         <Button
                           type="button"
-                          variant="ghost"
                           size="icon"
                           className="absolute right-0 top-0 h-full px-2 py-1 hover:bg-transparent text-gray-400"
                           onClick={() => setShowConfirmPassword(!showConfirmPassword)}
@@ -213,8 +245,9 @@ export function AddTeacherDialog(props) {
               <Button
                 type="submit"
                 className="h-9 px-4 text-sm dark:bg-white dark:text-black hover:bg-gray-800 bg-black text-white dark:hover:bg-gray-200"
+                disabled={loading}
               >
-                Save changes
+                {loading ? "Saving..." : "Save changes"}
               </Button>
             </div>
           </form>

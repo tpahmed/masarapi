@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { DataTable } from "@/components/teacher/data-table"
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar"
 import Header from "@/layout/header"
@@ -7,6 +7,7 @@ import { AppSidebar } from "@/components/sidebar/app-sidebar"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 // Add Checkbox import at the top
 import { Checkbox } from "@/components/ui/checkbox"
+import axios from "axios"
 
 const studentColumns = [
   {
@@ -33,71 +34,56 @@ const studentColumns = [
     header: "ID",
   },
   {
-    accessorKey: "name",
+    accessorKey: "fullName",
     header: "Name",
+    cell: ({ row }) => `${row.original.prenom} ${row.original.nom}`,
   },
   {
-    accessorKey: "grade",
+    accessorKey: "niveau",
     header: "Grade",
   },
   {
-    accessorKey: "age",
-    header: "Age",
-  },
-  {
-    accessorKey: "class",
+    accessorKey: "classe",
     header: "Class",
   },
-]
-
-const data = [
   {
-    id: "1",
-    name: "John Smith",
-    grade: "10th",
-    age: 15,
-    class: "10A",
-  },
-  {
-    id: "2",
-    name: "Emma Wilson",
-    grade: "9th",
-    age: 14,
-    class: "9B",
-  },
-  {
-    id: "3",
-    name: "Michael Johnson",
-    grade: "8th",
-    age: 13,
-    class: "8C",
-  },
-  {
-    id: "4",
-    name: "Sophia Lee",
-    grade: "11th",
-    age: 16,
-    class: "11A",
-  },
-  {
-    id: "5",
-    name: "Daniel Brown",
-    grade: "10th",
-    age: 15,
-    class: "10B",
+    accessorKey: "dateInscription",
+    header: "Inscription Date",
+    cell: ({ row }) => new Date(row.original.dateInscription).toLocaleDateString(),
   },
 ]
 
 export default function Teacher() {
+  const [students, setStudents] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
   const [selectedGrade, setSelectedGrade] = useState("")
   const [selectedClass, setSelectedClass] = useState("")
 
-  const grades = ["8th", "9th", "10th", "11th"]
-  const classes = ["A", "B", "C"]
+  useEffect(() => {
+    fetchStudents()
+  }, [])
 
-  const filteredData = data.filter(student => {
-    const matchesGrade = !selectedGrade || student.grade === selectedGrade
-    const matchesClass = !selectedClass || student.class.includes(selectedClass)
+  const fetchStudents = async () => {
+    try {
+      setLoading(true)
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/eleves`)
+      setStudents(response.data)
+    } catch (error) {
+      console.error("Error fetching students:", error)
+      setError("Failed to load students")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Get unique grades and classes from the data
+  const grades = [...new Set(students.map(student => student.niveau))].sort()
+  const classes = [...new Set(students.map(student => student.classe))].sort()
+
+  const filteredData = students.filter(student => {
+    const matchesGrade = !selectedGrade || selectedGrade === "all" || student.niveau === selectedGrade
+    const matchesClass = !selectedClass || selectedClass === "all" || student.classe === selectedClass
     return matchesGrade && matchesClass
   })
 
@@ -115,6 +101,7 @@ export default function Teacher() {
                   <p className="text-muted-foreground">
                     View and filter students by grade and class
                   </p>
+                  {error && <p className="text-sm text-red-500 mt-2">{error}</p>}
                 </div>
                 <div className="flex gap-4">
                   <Select value={selectedGrade} onValueChange={setSelectedGrade}>
@@ -138,7 +125,7 @@ export default function Teacher() {
                       <SelectItem value="all">All Classes</SelectItem>
                       {classes.map(cls => (
                         <SelectItem key={cls} value={cls}>
-                          Class {cls}
+                          {cls}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -146,7 +133,11 @@ export default function Teacher() {
                 </div>
               </div>
 
-              <DataTable columns={studentColumns} data={filteredData} />
+              <DataTable 
+                columns={studentColumns} 
+                data={filteredData}
+                loading={loading}
+              />
             </div>
           </div>
         </SidebarInset>
